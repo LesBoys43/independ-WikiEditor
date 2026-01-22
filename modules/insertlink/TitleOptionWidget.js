@@ -10,11 +10,14 @@
  * @param {boolean} [config.disambiguation=false]
  * @param {boolean} [config.missing=false]
  */
+
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 function InsertLinkTitleOptionWidget( config ) {
 	this.external = config.external || false;
 	if ( this.external ) {
 		config.icon = 'linkExternal';
-		config.description = mw.msg( 'wikieditor-toolbar-tool-link-int-target-status-external' );
+		config.description = __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-target-status-external' );
 		// Lowercase the first character; it was uppercased by the API.
 		config.url = config.data.slice( 0, 1 ).toLowerCase() + config.data.slice( 1 );
 		config.data = config.url;
@@ -30,7 +33,7 @@ function InsertLinkTitleOptionWidget( config ) {
 	InsertLinkTitleOptionWidget.super.call( this, config );
 }
 
-OO.inheritClass( InsertLinkTitleOptionWidget, mw.widgets.TitleOptionWidget );
+OO.inheritClass( InsertLinkTitleOptionWidget, OO.ui.Widget );
 
 /**
  * @return {boolean}
