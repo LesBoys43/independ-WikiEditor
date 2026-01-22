@@ -8,12 +8,15 @@ const InsertLinkTitleOptionWidget = require( './TitleOptionWidget.js' );
  * @extends mw.widgets.TitleInputWidget
  * @constructor
  */
+
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 function TitleInputWidget() {
 	TitleInputWidget.super.call( this, {
 		showImages: true,
 		showDescriptions: true,
 		showDisambigsLast: true,
-		placeholder: mw.msg( 'wikieditor-toolbar-tool-link-int-target-tooltip' ),
+		placeholder: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-target-tooltip' ),
 		$overlay: this.getOverlay(),
 		validateTitle: false,
 		showInterwikis: true,
@@ -22,7 +25,7 @@ function TitleInputWidget() {
 	} );
 }
 
-OO.inheritClass( TitleInputWidget, mw.widgets.TitleInputWidget );
+OO.inheritClass( TitleInputWidget, OO.ui.Widget );
 
 /**
  * Regular expression for determining what might be an external link.
@@ -30,7 +33,7 @@ OO.inheritClass( TitleInputWidget, mw.widgets.TitleInputWidget );
  * @static
  * @property {RegExp}
  */
-TitleInputWidget.static.urlRegex = new RegExp( '^(' + mw.config.get( 'wgUrlProtocols' ) + '|www\\.)', 'i' );
+TitleInputWidget.static.urlRegex = new RegExp( '^(' + 'http|https|ftp|sftp' + '|www\\.)', 'i' );
 
 /**
  * When leaving the input without selecting a menu item,
