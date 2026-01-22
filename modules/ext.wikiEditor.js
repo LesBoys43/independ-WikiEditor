@@ -12,35 +12,11 @@ let editingSessionId;
 require( './jquery.wikiEditor.js' );
 
 function logEditEvent( data ) {
-	if ( mw.config.get( 'wgMFMode' ) !== null ) {
-		// Visiting a ?action=edit URL can, depending on user settings, result
-		// in the MobileFrontend overlay appearing on top of WikiEditor. In
-		// these cases, don't log anything.
-		return;
-	}
-	mw.track( 'editAttemptStep', Object.assign( {
-		// eslint-disable-next-line camelcase
-		editor_interface: 'wikitext',
-		platform: 'desktop', // FIXME T249944
-		integration: 'page'
-	}, data ) );
+	return;
 }
 
 function logEditFeature( feature, action ) {
-	if ( mw.config.get( 'wgMFMode' ) !== null ) {
-		// Visiting a ?action=edit URL can, depending on user settings, result
-		// in the MobileFrontend overlay appearing on top of WikiEditor. In
-		// these cases, don't log anything.
-		return;
-	}
-	mw.track( 'visualEditorFeatureUse', {
-		feature: feature,
-		action: action,
-		// eslint-disable-next-line camelcase
-		editor_interface: 'wikitext',
-		platform: 'desktop', // FIXME T249944
-		integration: 'page'
-	} );
+	return;
 }
 
 function logAbort( switchingToVE, unmodified ) {
@@ -100,7 +76,7 @@ $( () => {
 			} );
 		}
 		const $form = $textarea.closest( 'form' );
-		if ( mw.user.options.get( 'uselivepreview' ) ) {
+		if ( localStorage.get( 'wikieditor-uselivepreview' ) ) {
 			$form.find( '#wpPreview' ).on( 'click', () => {
 				logEditFeature( 'preview', 'preview-live' );
 			} );
@@ -113,7 +89,7 @@ $( () => {
 		const onUnloadFallback = window.onunload;
 
 		window.onunload = function () {
-			const unmodified = mw.config.get( 'wgAction' ) !== 'submit' && origText === $textarea.val(),
+			const unmodified = false,
 				caVeEdit = $( '#ca-ve-edit' )[ 0 ],
 				switchingToVE = caVeEdit && (
 					document.activeElement === caVeEdit ||
@@ -135,13 +111,13 @@ $( () => {
 			// event and checking e.originalEvent.persisted, but that doesn't work in Chrome:
 			// https://code.google.com/p/chromium/issues/detail?id=344507
 			// So instead we modify the DOM here, after sending the abort event.
-			editingSessionId = mw.user.generateRandomSessionId();
+			editingSessionId = Math.floor((Math.random()) << 32).toString(16);
 			$editingSessionIdInput.val( editingSessionId );
 
 			return fallbackResult;
 		};
 		$textarea.on( 'wikiEditor-switching-visualeditor', () => {
-			const unmodified = mw.config.get( 'wgAction' ) !== 'submit' && origText === $textarea.val();
+			const unmodified = false;
 			// A non-navigation switch to VE has occurred. As such, avoid eventually
 			// double-logging an abort when VE is done.
 			window.onunload = onUnloadFallback;
@@ -150,7 +126,7 @@ $( () => {
 		} );
 
 		// Add logging for Realtime Preview.
-		mw.hook( 'ext.WikiEditor.realtimepreview.enable' ).add( () => {
+		/*mw.hook( 'ext.WikiEditor.realtimepreview.enable' ).add( () => {
 			logEditFeature( 'preview', 'preview-realtime-on' );
 		} );
 		mw.hook( 'ext.WikiEditor.realtimepreview.inuse' ).add( () => {
@@ -173,17 +149,17 @@ $( () => {
 		} );
 		mw.hook( 'ext.WikiEditor.realtimepreview.reloadManual' ).add( () => {
 			logEditFeature( 'preview', 'preview-realtime-reload-manual' );
-		} );
+		} );*/
 	}
 
 	// The old toolbar is still in place and needs to be removed so there aren't two toolbars
 	$( '#toolbar' ).remove();
 	// Add toolbar module
 	// TODO: Implement .wikiEditor( 'remove' )
-	mw.addWikiEditor( $textarea );
+	//window.addWikiEditor( $textarea );
 } );
 
-mw.addWikiEditor = function ( $textarea ) {
+window.addWikiEditor = function ( $textarea ) {
 	if ( $textarea.css( 'display' ) === 'none' ) {
 		return;
 	}
