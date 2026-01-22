@@ -4,6 +4,8 @@
  * @memberof module:ext.wikiEditor
  */
 
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 /* This feature was added to ve before it was contemplated for WikiEditor,
    so we wound up using a slightly awkward key */
 const RECENTKEY = 'visualeditor-symbolList-recentlyUsed-specialCharacters';
@@ -503,7 +505,7 @@ const toolbarModule = {
 				if ( id === 'recent' ) {
 					$page.on( 'loadPage', () => {
 						try {
-							page.characters = JSON.parse( mw.user.options.get( RECENTKEY ) || '[]' );
+							page.characters = JSON.parse( localStorage.get( `wikieditor-${RECENTKEY}` ) || '[]' );
 						} catch ( e ) {
 							page.characters = [];
 						}
@@ -598,12 +600,12 @@ const toolbarModule = {
 			const $row = $( '<tr>' );
 			for ( let i = 0; i < headings.length; i++ ) {
 				if ( !headings[ i ].msg ) {
-					mw.log.warn( 'The toolbar headings must use a `msg` key with a `mw.Message` key as value. Other keys are deprecated.' );
+					console.warn( 'The toolbar headings must use a `msg` key with a `__wikieditor_i18n` key as value. Other keys are deprecated.' );
 				}
 				$row.append(
 					headings[ i ].msg ?
 						// eslint-disable-next-line mediawiki/msg-doc
-						$( '<th>' ).append( mw.message( headings[ i ].msg ).parseDom() ) :
+						$( '<th>' ).append( __wikieditor_i18n( headings[ i ].msg ).parseDom() ) :
 						// Deprecated backward compatibility
 						$( '<th>' ).html( $.wikiEditor.autoSafeMsg( headings[ i ], [ 'html', 'text' ] ) )
 				);
@@ -663,7 +665,7 @@ const toolbarModule = {
 						const maxRecentlyUsed = 32;
 						let cache;
 						try {
-							cache = JSON.parse( mw.user.options.get( RECENTKEY ) || '[]' );
+							cache = JSON.parse( localStorage.get( `wikieditor-${RECENTKEY}` ) || '[]' );
 						} catch ( e ) {
 							cache = [];
 						}
@@ -674,8 +676,8 @@ const toolbarModule = {
 						}
 						cache.unshift( storeAs );
 						cache = cache.slice( 0, maxRecentlyUsed );
-						( new mw.Api() ).saveOption( RECENTKEY, JSON.stringify( cache ) );
-						mw.user.options.set( RECENTKEY, JSON.stringify( cache ) );
+						//( new mw.Api() ).saveOption( RECENTKEY, JSON.stringify( cache ) );
+						localStorage.set( `wikieditor-${RECENTKEY}`, JSON.stringify( cache ) );
 					}
 				};
 				actions[ character.label ] = [
@@ -683,7 +685,7 @@ const toolbarModule = {
 					updateRecentAction
 				];
 				// eslint-disable-next-line mediawiki/msg-doc
-				const title = character.titleMsg ? mw.msg( character.titleMsg ) : character.title;
+				const title = character.titleMsg ? __wikieditor_i18n( character.titleMsg ) : character.title;
 				return $( '<span>' )
 					.attr( {
 						rel: character.label,
@@ -691,7 +693,7 @@ const toolbarModule = {
 					} )
 					.text( character.label );
 			}
-			mw.log( 'A character for the toolbar was undefined. This is not supposed to happen. Double check the config.' );
+			console.log( 'A character for the toolbar was undefined. This is not supposed to happen. Double check the config.' );
 			// bug 31673; also an additional fix for bug 24208...
 			return $();
 		},
@@ -878,7 +880,7 @@ const toolbarModule = {
 			setTimeout( () => {
 				context.$textarea.trigger( 'wikiEditor-toolbar-doneInitialSections' );
 				// Use hook for attaching new toolbar tools to avoid race conditions
-				mw.hook( 'wikiEditor.toolbarReady' ).fire( context.$textarea );
+				// mw.hook( 'wikiEditor.toolbarReady' ).fire( context.$textarea );
 			} );
 			toolbarModule.fn.setupShortcuts( context );
 		},
@@ -903,12 +905,12 @@ const toolbarModule = {
 			const modifier = this.modifierForKey( key ) === 'ctrlKey' ? 'ctrl+' : '⌘';
 
 			// see: jquery.accessKeyLabel.updateTooltipOnElement
-			const separatorMsg = mw.message( 'word-separator' ).plain();
-			const parts = ( separatorMsg + mw.message( 'brackets' ).plain() ).split( '$1' );
+			const separatorMsg = __wikieditor_i18n( 'word-separator' ).plain();
+			const parts = ( separatorMsg + __wikieditor_i18n( 'brackets' ).plain() ).split( '$1' );
 
-			const regexp = new RegExp( parts.map( mw.util.escapeRegExp ).join( '.*?' ) + '$' );
+			const regexp = new RegExp( parts.map( escape ).join( '.*?' ) + '$' );
 
-			return label.replace( regexp, '' ) + separatorMsg + mw.message( 'brackets', modifier + key ).plain();
+			return label.replace( regexp, '' ) + separatorMsg + __wikieditor_i18n( 'brackets', modifier + key ).plain();
 		},
 		modifierForKey: function ( key ) {
 			const profile = $.client.profile();
