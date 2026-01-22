@@ -596,7 +596,7 @@ module.exports = {
 						.insertAfter( $( '#wikieditor-toolbar-table-preview' ) )
 						.hide();
 
-						($( '#wikieditor-toolbar-table-preview2' ).tablesorter ?? () => {])();
+						($( '#wikieditor-toolbar-table-preview2' ).tablesorter ?? () => {})();
 
 					$( '#wikieditor-toolbar-table-sortable' ).on( 'click', () => {
 						// Swap the currently shown one clone with the other one
