@@ -4,7 +4,7 @@
  * @memberof module:ext.wikiEditor
  */
 
-const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
 
 /* This feature was added to ve before it was contemplated for WikiEditor,
    so we wound up using a slightly awkward key */

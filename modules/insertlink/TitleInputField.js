@@ -2,7 +2,7 @@ const LinkTypeField = require( './LinkTypeField.js' );
 const TitleInputWidget = require( './TitleInputWidget.js' );
 /* global InsertLinkTitleOptionWidget */
 
-const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
 
 /**
  * A FieldLayout containing a custom TitleInputwidget and message-display system.

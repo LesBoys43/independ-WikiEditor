@@ -4,7 +4,7 @@
  * @memberof module:ext.wikiEditor
  */
 
-const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
 
 const dialogsModule = {
 
