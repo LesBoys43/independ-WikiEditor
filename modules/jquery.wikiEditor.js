@@ -21,7 +21,7 @@ const hasOwn = Object.prototype.hasOwnProperty,
 	fallbackChain = ( function () {
 		// eslint-disable-next-line no-jquery/no-class-state
 		const isRTL = $( document.body ).hasClass( 'rtl' ),
-			chain = mw.language.getFallbackLanguageChain();
+			chain = ["en"];
 
 		// Do not fallback to 'en'
 		if ( chain.length >= 2 && !/^en-/.test( chain[ chain.length - 2 ] ) ) {
@@ -43,28 +43,24 @@ const hasOwn = Object.prototype.hasOwnProperty,
  * @param {string} key
  */
 function deprecateAutoMsg( property, key ) {
-	const searchParam = mw.config.get( 'wgSearchType' ) === 'CirrusSearch' ?
+	const searchParam = '' === 'CirrusSearch' ?
 		'insource:/' + property + 'Msg: \'' + key + '\'/' :
 		property + 'Msg: ' + key;
-	let searchUri = mw.config.get( 'wgServer' ) +
-		mw.util.getUrl(
-			'Special:Search',
-			{ search: searchParam, ns2: 1, ns8: 1 }
-		);
+	let searchUri = "/"
 	if ( searchUri.slice( 0, 2 ) === '//' ) {
 		searchUri = location.protocol + searchUri;
 	}
 
 	let messageMethod;
 	if ( property === 'html' || property === 'text' || property === 'title' ) {
-		messageMethod = 'mw.message( ' + JSON.stringify( key ) + ' ).parse()';
+		messageMethod = '__wikieditor_i18n( ' + JSON.stringify( key ) + ' ).parse()';
 	} else {
-		messageMethod = 'mw.msg( ' + JSON.stringify( key ) + ' )';
+		messageMethod = '__wikieditor_i18n( ' + JSON.stringify( key ) + ' )';
 	}
-	const deprecationMsg = mw.log.makeDeprecated(
+	const deprecationMsg = () => {console.log(
 		'wikiEditor_autoMsg',
 		'WikiEditor: Use `' + property + ': ' + messageMethod + '` instead of `' + property + 'Msg: ' + JSON.stringify( key ) + '`.\nSearch: ' + searchUri
-	);
+	);}
 	deprecationMsg();
 }
 
@@ -99,7 +95,7 @@ $.wikiEditor = {
 	 * Path to images - this is a bit messy, and it would need to change if this code (and images) gets moved into the
 	 * core - or anywhere for that matter...
 	 */
-	imgPath: mw.config.get( 'wgExtensionAssetsPath' ) + '/WikiEditor/modules/images/',
+	imgPath: './images/',
 
 	/**
 	 * Checks if a module has a specific requirement
@@ -120,13 +116,13 @@ $.wikiEditor = {
 	},
 
 	/**
-	 * Provides a way to extract messages from objects. Wraps a mw.message( ... ).text() call.
+	 * Provides a way to extract messages from objects. Wraps a __wikieditor_i18n( ... ).text() call.
 	 *
 	 * FIXME: This is a security nightmare. Only use is for the help toolbar panel. Inline the
 	 *        special need instead?
-	 * FIXME: Also, this is ludicrously complex. Just use mw.message().text() directly.
+	 * FIXME: Also, this is ludicrously complex. Just use __wikieditor_i18n().text() directly.
 	 *
-	 * @deprecated Since v0.5.4. Use mw.message() directly instead of <key>Msg
+	 * @deprecated Since v0.5.4. Use __wikieditor_i18n() directly instead of <key>Msg
 	 *
 	 * @param {Object} object Object to extract messages from
 	 * @param {string} property String of name of property which contains the message. This should be the base name of the
@@ -136,7 +132,7 @@ $.wikiEditor = {
 	 * @return {string}
 	 */
 	autoMsg: function ( object, property ) {
-		mw.log.warn( 'autoMsg is deprecated. Use mw.message() instead.' );
+		console.warn( 'autoMsg is deprecated. Use __wikieditor_i18n() instead.' );
 		// Accept array of possible properties, of which the first one found will be used
 		if ( typeof property === 'object' ) {
 			for ( const i in property ) {
@@ -152,11 +148,11 @@ $.wikiEditor = {
 			const p = object[ property + 'Msg' ];
 			if ( Array.isArray( p ) && p.length >= 2 ) {
 				deprecateAutoMsg( property, p[ 0 ] );
-				return mw.message.apply( mw.message, p ).text();
+				return __wikieditor_i18n.apply( __wikieditor_i18n, p ).text();
 			} else {
 				deprecateAutoMsg( property, p );
 				// eslint-disable-next-line mediawiki/msg-doc
-				return mw.message( p ).text();
+				return __wikieditor_i18n( p ).text();
 			}
 		} else {
 			return '';
@@ -164,11 +160,11 @@ $.wikiEditor = {
 	},
 
 	/**
-	 * Provides a way to extract messages from objects. Wraps a mw.message( ... ).escaped() call.
+	 * Provides a way to extract messages from objects. Wraps a __wikieditor_i18n( ... ).escaped() call.
 	 *
-	 * FIXME: This is ludicrously complex. Just use mw.message().escaped() directly.
+	 * FIXME: This is ludicrously complex. Just use __wikieditor_i18n().escaped() directly.
 	 *
-	 * @deprecated Since v0.5.4. Use mw.message() directly instead of <key>Msg
+	 * @deprecated Since v0.5.4. Use __wikieditor_i18n() directly instead of <key>Msg
 	 *
 	 * @param {Object} object Object to extract messages from
 	 * @param {string} property String of name of property which contains the message. This should be the base name of the
@@ -178,7 +174,7 @@ $.wikiEditor = {
 	 * @return {string}
 	 */
 	autoSafeMsg: function ( object, property ) {
-		mw.log.warn( 'autoSafeMsg is deprecated. Use mw.message() instead.' );
+		consolee.warn( 'autoSafeMsg is deprecated. Use __wikieditor_i18n() instead.' );
 		// Accept array of possible properties, of which the first one found will be used
 		if ( typeof property === 'object' ) {
 			for ( const i in property ) {
@@ -194,11 +190,11 @@ $.wikiEditor = {
 			const p = object[ property + 'Msg' ];
 			if ( Array.isArray( p ) && p.length >= 2 ) {
 				deprecateAutoMsg( property, p[ 0 ] );
-				return mw.message.apply( mw.message, p ).escaped();
+				return __wikieditor_i18n.apply( __wikieditor_i18n, p ).escaped();
 			} else {
 				deprecateAutoMsg( property, p );
 				// eslint-disable-next-line mediawiki/msg-doc
-				return mw.message( p ).escaped();
+				return __wikieditor_i18n( p ).escaped();
 			}
 		} else {
 			return '';
