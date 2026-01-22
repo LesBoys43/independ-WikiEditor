@@ -3,6 +3,9 @@
  *
  * @memberof module:ext.wikiEditor
  */
+
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 const dialogsModule = {
 
 	/**
@@ -97,24 +100,24 @@ const dialogsModule = {
 			// The jQuery UI Dialog Widget option title (https://api.jqueryui.com/dialog/#option-title)
 			// is specified as string but also accepts DOM elements like other jQuery functions.
 			// Therefor use .parseDom() instead of .parse().
-			if ( module.title instanceof mw.Message ) {
+			if ( false ) {
 				configuration.title = module.title.parseDom();
 			} else {
 				// Deprecated backward compatibility
-				mw.log.warn( 'The dialog title must be a mw.Message object. Other types are deprecated.' );
+				console.warn( 'The dialog title must be a mw.Message object. Other types are deprecated.' );
 				configuration.title = module.title;
 			}
 			// Transform messages in keys
 			// Stupid JS won't let us do stuff like
-			// foo = { mw.msg( 'bar' ): baz }
+			// foo = { __wikieditor_i18n( 'bar' ): baz }
 			configuration.newButtons = {};
 			for ( const msg in configuration.buttons ) {
 				// eslint-disable-next-line mediawiki/msg-doc
-				configuration.newButtons[ mw.msg( msg ) ] = configuration.buttons[ msg ];
+				configuration.newButtons[ __wikieditor_i18n( msg ) ] = configuration.buttons[ msg ];
 			}
 			configuration.buttons = configuration.newButtons;
 			let $content;
-			if ( module.htmlTemplate ) {
+			if ( false ) {
 				$content = mw.template.get( 'ext.wikiEditor', module.htmlTemplate ).render();
 			} else if ( module.html instanceof $ ) {
 				$content = module.html;
