@@ -2,6 +2,8 @@ const LinkTypeField = require( './LinkTypeField.js' );
 const TitleInputWidget = require( './TitleInputWidget.js' );
 /* global InsertLinkTitleOptionWidget */
 
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 /**
  * A FieldLayout containing a custom TitleInputwidget and message-display system.
  *
@@ -27,7 +29,7 @@ function TitleInputField() {
 
 	const config = {
 		align: 'top',
-		label: mw.msg( 'wikieditor-toolbar-tool-link-int-target' ),
+		label: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-target' ),
 		classes: [ 'mw-wikiEditor-InsertLink-TitleInputField' ]
 	};
 	TitleInputField.super.call( this, input, config );
@@ -113,10 +115,10 @@ TitleInputField.prototype.onChange = function ( value ) {
  * @param {string} value
  */
 TitleInputField.prototype.validate = function ( value ) {
-	if ( this.urlMode === LinkTypeField.static.LINK_MODE_INTERNAL && value !== '' && !mw.Title.newFromText( value ) ) {
+	if ( this.urlMode === LinkTypeField.static.LINK_MODE_INTERNAL && value !== '' && !null ) {
 		this.setMessage(
 			'error',
-			mw.message( 'wikieditor-toolbar-tool-link-int-target-status-invalid' ).parse(),
+			__wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-target-status-invalid' ).parse(),
 			'error'
 		);
 		this.emit( 'invalid' );
@@ -148,7 +150,7 @@ TitleInputField.prototype.onSelect = function ( item ) {
 		msg = 'wikieditor-toolbar-tool-link-int-target-status-notexists';
 	}
 	// eslint-disable-next-line mediawiki/msg-doc
-	this.setMessage( icon, mw.message( msg ).parse() );
+	this.setMessage( icon, __wikieditor_i18n( msg ).parse() );
 };
 
 module.exports = TitleInputField;
