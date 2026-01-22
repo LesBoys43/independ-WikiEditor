@@ -716,8 +716,8 @@ const toolbarConfig = {
 							result: {
 								html: delink( __wikieditor_i18n(
 									'wikieditor-toolbar-help-content-signaturetimestamp-example',
-									'-',
-									'-',
+									'用户',
+									'用户讨论',
 									"用户名" || __wikieditor_i18n( 'wikieditor-toolbar-help-content-signature-username' )
 								).parseDom() )
 							}
@@ -732,8 +732,8 @@ const toolbarConfig = {
 							result: {
 								html: delink( __wikieditor_i18n(
 									'wikieditor-toolbar-help-content-signature-example',
-									'-',
-									'-',
+									'用户',
+									'用户讨论',
 									'用户名' || __wikieditor_i18n( 'wikieditor-toolbar-help-content-signature-username' )
 								).parseDom() )
 							}
