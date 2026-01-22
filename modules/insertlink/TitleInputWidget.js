@@ -9,7 +9,7 @@ const InsertLinkTitleOptionWidget = require( './TitleOptionWidget.js' );
  * @constructor
  */
 
-const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("../ext.wikiEditor.i18n.js").i18n
 
 function TitleInputWidget() {
 	TitleInputWidget.super.call( this, {

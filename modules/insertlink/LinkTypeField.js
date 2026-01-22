@@ -5,7 +5,7 @@
  * @constructor
  */
 
-const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("../ext.wikiEditor.i18n.js").i18n
 
 function LinkTypeField() {
 	// Mixin constructor

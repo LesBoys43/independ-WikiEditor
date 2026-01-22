@@ -11,7 +11,7 @@
  * @param {boolean} [config.missing=false]
  */
 
-const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
+const __wikieditor_i18n = require("../ext.wikiEditor.i18n.js").i18n
 
 function InsertLinkTitleOptionWidget( config ) {
 	this.external = config.external || false;
