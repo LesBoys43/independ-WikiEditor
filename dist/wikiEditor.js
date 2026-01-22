@@ -6,6 +6,344 @@
     return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
   };
 
+  // jquery-plugins-bundle.js
+  var require_jquery_plugins_bundle = __commonJS({
+    "jquery-plugins-bundle.js"() {
+      (function() {
+        $.fn.textSelection = function(command, commandOptions) {
+          function supportsInsertText() {
+            return $(this).data("jquery.textSelection") === void 0 && typeof document.execCommand === "function" && typeof document.queryCommandSupported === "function" && document.queryCommandSupported("insertText");
+          }
+          __name(supportsInsertText, "supportsInsertText");
+          function execInsertText(field, content, fallback) {
+            var inserted = false;
+            if (supportsInsertText() && !// Support: Chrome, Safari
+            // Inserting multiple lines is very slow in Chrome/Safari (T343795)
+            // If this is ever fixed, remove the dependency on jquery.client
+            ($.client.profile().layout === "webkit" && content.split("\n").length > 100)) {
+              field.focus();
+              try {
+                if (
+                  // Ensure the field was focused, otherwise we can't use execCommand() to change it.
+                  // focus() can fail if e.g. the field is disabled, or its container is inert.
+                  document.activeElement === field && // Try to insert
+                  document.execCommand("insertText", false, content)
+                ) {
+                  inserted = true;
+                }
+              } catch (e) {
+              }
+            }
+            if (!inserted) {
+              fallback.call(field, content);
+            }
+          }
+          __name(execInsertText, "execInsertText");
+          var fn = {
+            /**
+             * Get the contents of the textarea.
+             *
+             * @private
+             * @return {string}
+             */
+            getContents: /* @__PURE__ */ __name(function() {
+              return this.val();
+            }, "getContents"),
+            /**
+             * Set the contents of the textarea, replacing anything that was there before.
+             *
+             * @private
+             * @param {string} content
+             * @return {jQuery}
+             * @chainable
+             */
+            setContents: /* @__PURE__ */ __name(function(content) {
+              return this.each(function() {
+                var scrollTop = this.scrollTop;
+                this.select();
+                execInsertText(this, content, function() {
+                  $(this).val(content);
+                });
+                this.scrollTop = scrollTop;
+              });
+            }, "setContents"),
+            /**
+             * Get the currently selected text in this textarea.
+             *
+             * @private
+             * @return {string}
+             */
+            getSelection: /* @__PURE__ */ __name(function() {
+              var el = this.get(0);
+              var val;
+              if (!el) {
+                val = "";
+              } else {
+                val = el.value.slice(el.selectionStart, el.selectionEnd);
+              }
+              return val;
+            }, "getSelection"),
+            /**
+             * Replace the selected text in the textarea with the given text, or insert it at the cursor.
+             *
+             * @private
+             * @param {string} value
+             * @return {jQuery}
+             * @chainable
+             */
+            replaceSelection: /* @__PURE__ */ __name(function(value) {
+              return this.each(function() {
+                execInsertText(this, value, function() {
+                  var allText = $(this).textSelection("getContents");
+                  var currSelection = $(this).textSelection("getCaretPosition", { startAndEnd: true });
+                  var startPos = currSelection[0];
+                  var endPos = currSelection[1];
+                  $(this).textSelection("setContents", allText.slice(0, startPos) + value + allText.slice(endPos));
+                  $(this).textSelection("setSelection", {
+                    start: startPos,
+                    end: startPos + value.length
+                  });
+                });
+              });
+            }, "replaceSelection"),
+            /**
+             * Insert text at the beginning and end of a text selection, optionally
+             * inserting text at the caret when selection is empty.
+             *
+             * Also focusses the textarea.
+             *
+             * @private
+             * @param {Object} [options]
+             * @param {string} [options.pre] Text to insert before the cursor/selection
+             * @param {string} [options.peri] Text to insert between pre and post and select afterwards
+             * @param {string} [options.post] Text to insert after the cursor/selection
+             * @param {boolean} [options.ownline=false] Put the inserted text on a line of its own
+             * @param {boolean} [options.replace=false] If there is a selection, replace it with peri
+             *  instead of leaving it alone
+             * @param {boolean} [options.selectPeri=true] Select the peri text if it was inserted (but not
+             *  if there was a selection and replace==false, or if splitlines==true)
+             * @param {boolean} [options.splitlines=false] If multiple lines are selected, encapsulate
+             *  each line individually
+             * @param {number} [options.selectionStart] Position to start selection at
+             * @param {number} [options.selectionEnd=options.selectionStart] Position to end selection at
+             * @return {jQuery}
+             * @chainable
+             */
+            encapsulateSelection: /* @__PURE__ */ __name(function(options) {
+              return this.each(function() {
+                var selText, isSample, pre = options.pre, post = options.post;
+                function checkSelectedText() {
+                  if (!selText) {
+                    selText = options.peri;
+                    isSample = true;
+                  } else if (options.replace) {
+                    selText = options.peri;
+                  } else {
+                    while (selText.charAt(selText.length - 1) === " ") {
+                      selText = selText.slice(0, -1);
+                      post += " ";
+                    }
+                    while (selText.charAt(0) === " ") {
+                      selText = selText.slice(1);
+                      pre = " " + pre;
+                    }
+                  }
+                }
+                __name(checkSelectedText, "checkSelectedText");
+                function doSplitLines(text, preText, postText) {
+                  var insText = "", selTextArr = text.split("\n");
+                  for (var i = 0; i < selTextArr.length; i++) {
+                    insText += preText + selTextArr[i] + postText;
+                    if (i !== selTextArr.length - 1) {
+                      insText += "\n";
+                    }
+                  }
+                  return insText;
+                }
+                __name(doSplitLines, "doSplitLines");
+                isSample = false;
+                $(this).trigger("focus");
+                if (options.selectionStart !== void 0) {
+                  $(this).textSelection("setSelection", { start: options.selectionStart, end: options.selectionEnd });
+                }
+                selText = $(this).textSelection("getSelection");
+                var allText = $(this).textSelection("getContents");
+                var currSelection = $(this).textSelection("getCaretPosition", { startAndEnd: true });
+                var startPos = currSelection[0];
+                var endPos = currSelection[1];
+                checkSelectedText();
+                var combiningCharSelectionBug = false;
+                if (options.selectionStart !== void 0 && endPos - startPos !== options.selectionEnd - options.selectionStart) {
+                  startPos = options.selectionStart;
+                  combiningCharSelectionBug = true;
+                }
+                var insertText = pre + selText + post;
+                if (options.splitlines) {
+                  insertText = doSplitLines(selText, pre, post);
+                }
+                if (options.ownline) {
+                  if (startPos !== 0 && allText.charAt(startPos - 1) !== "\n" && allText.charAt(startPos - 1) !== "\r") {
+                    insertText = "\n" + insertText;
+                    pre += "\n";
+                  }
+                  if (allText.charAt(endPos) !== "\n" && allText.charAt(endPos) !== "\r") {
+                    insertText += "\n";
+                    post += "\n";
+                  }
+                }
+                if (combiningCharSelectionBug) {
+                  $(this).textSelection("setContents", allText.slice(0, startPos) + insertText + allText.slice(endPos));
+                } else {
+                  $(this).textSelection("replaceSelection", insertText);
+                }
+                if (isSample && options.selectPeri && (!options.splitlines || options.splitlines && selText.indexOf("\n") === -1)) {
+                  $(this).textSelection("setSelection", {
+                    start: startPos + pre.length,
+                    end: startPos + pre.length + selText.length
+                  });
+                } else {
+                  $(this).textSelection("setSelection", {
+                    start: startPos + insertText.length
+                  });
+                }
+                $(this).trigger("encapsulateSelection", [
+                  options.pre,
+                  options.peri,
+                  options.post,
+                  options.ownline,
+                  options.replace,
+                  options.splitlines
+                ]);
+              });
+            }, "encapsulateSelection"),
+            /**
+             * Get the current cursor position (in UTF-16 code units) in a textarea.
+             *
+             * @private
+             * @param {Object} [options]
+             * @param {Object} [options.startAndEnd=false] Return range of the selection rather than just start
+             * @return {Mixed}
+             *  - When `startAndEnd` is `false`: number
+             *  - When `startAndEnd` is `true`: array with two numbers, for start and end of selection
+             */
+            getCaretPosition: /* @__PURE__ */ __name(function(options) {
+              function getCaret(e) {
+                var caretPos = 0, endPos = 0;
+                if (e) {
+                  caretPos = e.selectionStart;
+                  endPos = e.selectionEnd;
+                }
+                return options.startAndEnd ? [caretPos, endPos] : caretPos;
+              }
+              __name(getCaret, "getCaret");
+              return getCaret(this.get(0));
+            }, "getCaretPosition"),
+            /**
+             * Set the current cursor position (in UTF-16 code units) in a textarea.
+             *
+             * @private
+             * @param {Object} [options]
+             * @param {number} options.start
+             * @param {number} [options.end=options.start]
+             * @return {jQuery}
+             * @chainable
+             */
+            setSelection: /* @__PURE__ */ __name(function(options) {
+              return this.each(function() {
+                if (options.start > this.selectionEnd) {
+                  this.selectionEnd = options.end;
+                  this.selectionStart = options.start;
+                } else {
+                  this.selectionStart = options.start;
+                  this.selectionEnd = options.end;
+                }
+              });
+            }, "setSelection"),
+            /**
+             * Scroll a textarea to the current cursor position. You can set the cursor
+             * position with #setSelection.
+             *
+             * @private
+             * @param {Object} [options]
+             * @param {string} [options.force=false] Whether to force a scroll even if the caret position
+             *  is already visible.
+             * @return {jQuery}
+             * @chainable
+             */
+            scrollToCaretPosition: /* @__PURE__ */ __name(function(options) {
+              return this.each(function() {
+                var clientHeight = this.clientHeight, origValue = this.value, origSelectionStart = this.selectionStart, origSelectionEnd = this.selectionEnd, origScrollTop = this.scrollTop;
+                this.value = this.value.slice(0, this.selectionEnd);
+                this.scrollTop = this.scrollHeight;
+                var calcScrollTop = this.scrollTop;
+                this.value = origValue;
+                this.selectionStart = origSelectionStart;
+                this.selectionEnd = origSelectionEnd;
+                if (!options.force) {
+                  if (calcScrollTop < origScrollTop && origScrollTop - calcScrollTop < clientHeight) {
+                    calcScrollTop = origScrollTop;
+                  }
+                }
+                this.scrollTop = calcScrollTop;
+                $(this).trigger("scrollToPosition");
+              });
+            }, "scrollToCaretPosition")
+          };
+          var alternateFn = $(this).data("jquery.textSelection");
+          switch (command) {
+            // case 'getContents': // no params
+            // case 'setContents': // no params with defaults
+            // case 'getSelection': // no params
+            // case 'replaceSelection': // no params with defaults
+            case "encapsulateSelection":
+              commandOptions = $.extend({
+                pre: "",
+                peri: "",
+                post: "",
+                ownline: false,
+                replace: false,
+                selectPeri: true,
+                splitlines: false,
+                selectionStart: void 0,
+                selectionEnd: void 0
+              }, commandOptions);
+              break;
+            case "getCaretPosition":
+              commandOptions = $.extend({
+                startAndEnd: false
+              }, commandOptions);
+              break;
+            case "setSelection":
+              commandOptions = $.extend({
+                start: void 0,
+                end: void 0
+              }, commandOptions);
+              if (commandOptions.end === void 0) {
+                commandOptions.end = commandOptions.start;
+              }
+              break;
+            case "scrollToCaretPosition":
+              commandOptions = $.extend({
+                force: false
+              }, commandOptions);
+              break;
+            case "register":
+              if (alternateFn) {
+                throw new Error("Another textSelection API was already registered");
+              }
+              $(this).data("jquery.textSelection", commandOptions);
+              return;
+            case "unregister":
+              $(this).removeData("jquery.textSelection");
+              return;
+          }
+          var retval = (alternateFn && alternateFn[command] || fn[command]).call(this, commandOptions);
+          return retval;
+        };
+      })();
+    }
+  });
+
   // ext.wikiEditor.i18n.js
   var require_ext_wikiEditor_i18n = __commonJS({
     "ext.wikiEditor.i18n.js"(exports, module) {
@@ -1165,6 +1503,7 @@
   // jquery.wikiEditor.js
   var require_jquery_wikiEditor = __commonJS({
     "jquery.wikiEditor.js"() {
+      require_jquery_plugins_bundle();
       var __wikieditor_i18n2 = require_ext_wikiEditor_i18n().i18n;
       var hasOwn = Object.prototype.hasOwnProperty;
       var fallbackChain = (function() {
@@ -3385,3 +3724,12 @@
     $textarea.wikiEditor("addModule", dialogsConfig.getDefaultConfig());
   };
 })();
+/*!
+ * These plugins provide extra functionality for interaction with textareas.
+ *
+ * - encapsulateSelection: Ported from skins/common/edit.js by Trevor Parscal
+ *   © 2009 Wikimedia Foundation (GPLv2) - https://www.wikimedia.org
+ * - getCaretPosition, scrollToCaretPosition: Ported from Wikia's LinkSuggest extension
+ *   https://github.com/Wikia/app/blob/c0cd8b763/extensions/wikia/LinkSuggest/js/jquery.wikia.linksuggest.js
+ *   © 2010 Inez Korczyński (korczynski@gmail.com) & Jesús Martínez Novo (martineznovo@gmail.com) (GPLv2)
+ */
