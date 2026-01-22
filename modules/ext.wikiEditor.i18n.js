@@ -212,6 +212,11 @@ module.exports = {
 			return escape(ctx.plain())
 		}}
 		ctx.text = ctx.plain
+		ctx.toString = ctx.plain
+		ctx.toLocaleString = ctx.plain
+		if (Array.from(arguments).length > 1) {
+			ctx.params.apply(ctx, Array.from(arguments).slice(1, Infinity)
+		}
 		return ctx
 	}
 }
