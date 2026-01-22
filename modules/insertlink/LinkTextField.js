@@ -3,9 +3,12 @@
  * @extends OO.ui.FieldLayout
  * @constructor
  */
+
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 function LinkTextField() {
 	const input = new OO.ui.TextInputWidget( {
-		placeholder: mw.msg( 'wikieditor-toolbar-tool-link-int-text-tooltip' )
+		placeholder: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-text-tooltip' )
 	} );
 
 	input.connect( this, {
@@ -14,7 +17,7 @@ function LinkTextField() {
 
 	const config = {
 		align: 'top',
-		label: mw.msg( 'wikieditor-toolbar-tool-link-int-text' ),
+		label: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int-text' ),
 		classes: [ 'mw-wikiEditor-InsertLink-LinkTextField' ]
 	};
 	LinkTextField.super.call( this, input, config );
