@@ -11,6 +11,7 @@
 /**
  * @private
  */
+require("./jquery-plugins-bundle.js")
 const __wikieditor_i18n = require("./ext.wikiEditor.i18n.js").i18n
 
 const hasOwn = Object.prototype.hasOwnProperty,
