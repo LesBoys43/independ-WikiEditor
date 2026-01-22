@@ -4,15 +4,18 @@
  * @mixes OO.EventEmitter
  * @constructor
  */
+
+const __wikieditor_i18n = require("./jquery.wikiEditor.i18n.js").i18n
+
 function LinkTypeField() {
 	// Mixin constructor
 	OO.EventEmitter.call( this );
 
 	this.radioInt = new OO.ui.RadioOptionWidget( {
-		label: mw.msg( 'wikieditor-toolbar-tool-link-int' )
+		label: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-int' )
 	} );
 	this.radioExt = new OO.ui.RadioOptionWidget( {
-		label: mw.msg( 'wikieditor-toolbar-tool-link-ext' )
+		label: __wikieditor_i18n( 'wikieditor-toolbar-tool-link-ext' )
 	} );
 	const radioSelect = new OO.ui.RadioSelectWidget( {
 		items: [
